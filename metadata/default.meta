@@ -6,3 +6,6 @@ export = system
 [views]
 access = read : [ * ], write : [ admin ]
 export = none
+
+[commands/runbtool]
+access = read : [ admin ], write : [ admin ]
