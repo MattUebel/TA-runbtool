@@ -1,10 +1,7 @@
-import json
-import requests
 import sys
 import os
 import subprocess
 import itertools
-import splunklib.client as client
 
 from splunklib.searchcommands import dispatch, GeneratingCommand, Configuration, Option, validators
 
