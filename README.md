@@ -14,7 +14,7 @@ For any production environments, you will want to limit this search command to a
 ## Dependencies
 
 * Tested on Splunk 6.6+, likely works on earlier versions
-* Supported on Unix / Linux. Support for Windows coming
+* Supported on Unix / Linux and Windows as of v1.1.0
 
 ## Setup
 
