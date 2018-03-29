@@ -2,6 +2,7 @@ import sys
 import os
 import subprocess
 import itertools
+import re
 
 from splunklib.searchcommands import dispatch, GeneratingCommand, Configuration, Option, validators
 
@@ -21,25 +22,17 @@ class runBtool(GeneratingCommand):
                 if self.searchPeer is not None:
                     peerString = '--peername=' + self.searchPeer
                     
-                    ps = subprocess.Popen(([self.splunk_exe, 'btool', '--debug', self.confFile, 'list', peerString]), stdout=subprocess.PIPE)
-                    confFileOutput = subprocess.check_output(('awk', '{print $1}'), stdin=ps.stdout)
-                    ps.wait()
+                    confFileOutput = subprocess.check_output([self.splunk_exe, 'btool', '--debug', self.confFile, 'list', peerString])
                     
                     directiveOutput = subprocess.check_output([self.splunk_exe, 'btool', self.confFile, 'list', peerString])
                     
-                    ps = subprocess.Popen(([self.splunk_exe, 'btool', '--debug-print=stanza', self.confFile, 'list', peerString]), stdout=subprocess.PIPE)
-                    stanzaOutput = subprocess.check_output(('awk', '{print $1}'), stdin=ps.stdout)
-                    ps.wait()
+                    stanzaOutput = subprocess.check_output([self.splunk_exe, 'btool', '--debug-print=stanza', self.confFile, 'list', peerString])
                 else:                        
-                    ps = subprocess.Popen(([self.splunk_exe, 'btool', '--debug', self.confFile, 'list']), stdout=subprocess.PIPE)
-                    confFileOutput = subprocess.check_output(('awk', '{print $1}'), stdin=ps.stdout)
-                    ps.wait()
+                    confFileOutput = subprocess.check_output([self.splunk_exe, 'btool', '--debug', self.confFile, 'list'])
                     
                     directiveOutput = subprocess.check_output([self.splunk_exe, 'btool', self.confFile, 'list'])
                     
-                    ps = subprocess.Popen(([self.splunk_exe, 'btool', '--debug-print=stanza', self.confFile, 'list']), stdout=subprocess.PIPE)
-                    stanzaOutput = subprocess.check_output(('awk', '{print $1}'), stdin=ps.stdout)
-                    ps.wait()
+                    stanzaOutput = subprocess.check_output([self.splunk_exe, 'btool', '--debug-print=stanza', self.confFile, 'list'])
         
                 for j, k, l in itertools.izip_longest(confFileOutput.split('\n'), stanzaOutput.split('\n'), directiveOutput.split('\n')):
                     d_split = l.split('=')
@@ -48,7 +41,7 @@ class runBtool(GeneratingCommand):
                         d_value = d_split[1]
                     else:
                         d_value = None
-                    yield {'confFileLocation':j, 'stanza':k, 'directiveName':d_name, 'directiveValue':d_value}
+                    yield {'confFileLocation':re.compile("(?<=(\.conf))\s+").split(j)[0], 'stanza':re.compile("\s").split(k)[0], 'directiveName':d_name, 'directiveValue':d_value}
             except Exception as e:
                 error = repr(e)
                 yield {"error":error}
