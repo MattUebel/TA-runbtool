@@ -39,8 +39,10 @@ class runBtool(GeneratingCommand):
                     d_name = d_split[0]
                     if len(d_split) == 2:
                         d_value = d_split[1]
-                    else:
+                    elif len(d_split) == 1:
                         d_value = None
+                    else:
+                        d_value = "=".join(d_split[1:])
                     yield {'confFileLocation':re.compile("(?<=(\.conf))\s+").split(j)[0], 'stanza':re.compile("\s").split(k)[0], 'directiveName':d_name, 'directiveValue':d_value}
             except Exception as e:
                 error = repr(e)
